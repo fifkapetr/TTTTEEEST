@@ -95,7 +95,7 @@ describe("App", () => {
     expect(wrapper.get('[data-testid="list-size"]').text()).toBe("3");
     expect(wrapper.get('[data-testid="summary-size"]').text()).toBe("3");
 
-    const select = wrapper.find("select#status-filter");
+    const select = wrapper.get("select#status-filter");
     await select.setValue("pending");
     expect(wrapper.get('[data-testid="list-size"]').text()).toBe("1");
     expect(wrapper.get('[data-testid="summary-size"]').text()).toBe("3");
