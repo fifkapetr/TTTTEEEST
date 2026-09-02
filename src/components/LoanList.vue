@@ -1,43 +1,55 @@
 <script setup lang="ts">
-import type { LoanApplication } from '../types/loan'
-import { calculateMonthlyPayment } from '../services/loanService'
+import type { LoanApplication } from "../types/loan";
+import { calculateMonthlyPayment } from "../services/loanService";
 
 defineProps<{
-  loans: LoanApplication[]
-}>()
+  loans: LoanApplication[];
+}>();
 
 const emit = defineEmits<{
-  approve: [id: string]
-  reject: [id: string]
-  autoDecide: [id: string]
-}>()
+  approve: [id: string];
+  reject: [id: string];
+  autoDecide: [id: string];
+  delete: [id: string];
+}>();
+
+function handleDelete(id: string): void {
+  const confirmed = window.confirm(
+    "Are you sure you want to delete this loan application?",
+  );
+  if (!confirmed) {
+    return;
+  }
+
+  emit("delete", id);
+}
 
 function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
     minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  }).format(value)
+    maximumFractionDigits: 2,
+  }).format(value);
 }
 
 function formatPercent(value: number): string {
-  return `${(value * 100).toFixed(1)}%`
+  return `${(value * 100).toFixed(1)}%`;
 }
 
 function formatDate(isoDate: string): string {
-  return new Date(isoDate).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  })
+  return new Date(isoDate).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
 }
 </script>
 
 <template>
   <div class="loan-list card">
     <h2>Loan Applications</h2>
-    
+
     <div v-if="loans.length === 0" class="empty-state">
       <p>No loan applications yet. Create one using the form.</p>
     </div>
@@ -94,7 +106,22 @@ function formatDate(isoDate: string): string {
               >
                 ⚡
               </button>
-              <span v-if="loan.status !== 'pending'" class="no-actions">—</span>
+              <button
+                class="action-btn danger"
+                @click="handleDelete(loan.id)"
+                title="Delete"
+              >
+                🗑
+              </button>
+              <span
+                v-if="
+                  loan.status !== 'pending' &&
+                  loan.status !== 'approved' &&
+                  loan.status !== 'rejected'
+                "
+                class="no-actions"
+                >—</span
+              >
             </td>
           </tr>
         </tbody>
