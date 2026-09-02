@@ -14,7 +14,7 @@ const emit = defineEmits<{
 }>();
 
 function handleDelete(id: string): void {
-  const confirmed = window.confirm(
+  const confirmed = globalThis.confirm(
     "Are you sure you want to delete this loan application?",
   );
   if (!confirmed) {
@@ -113,15 +113,6 @@ function formatDate(isoDate: string): string {
               >
                 🗑
               </button>
-              <span
-                v-if="
-                  loan.status !== 'pending' &&
-                  loan.status !== 'approved' &&
-                  loan.status !== 'rejected'
-                "
-                class="no-actions"
-                >—</span
-              >
             </td>
           </tr>
         </tbody>
@@ -161,7 +152,4 @@ function formatDate(isoDate: string): string {
   margin-right: 0;
 }
 
-.no-actions {
-  color: var(--text-secondary);
-}
 </style>

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { mount } from "@vue/test-utils";
 import LoanList from "../src/components/LoanList.vue";
 import type { LoanApplication } from "../src/types/loan";
@@ -25,6 +25,10 @@ describe("LoanList", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(calculateMonthlyPayment).mockReturnValue(900);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it("shows empty state when no loans exist", () => {
