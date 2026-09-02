@@ -83,6 +83,34 @@ describe("App", () => {
     vi.clearAllMocks();
   });
 
+  it("filters loans by status when filter changes", async () => {
+    vi.mocked(getLoans).mockReturnValue([
+      createLoan({ id: "a", status: "pending" }),
+      createLoan({ id: "b", status: "approved" }),
+      createLoan({ id: "c", status: "rejected" }),
+    ]);
+
+    const wrapper = mountApp();
+    await Promise.resolve();
+
+    expect(wrapper.get('[data-testid="list-size"]').text()).toBe("3");
+    expect(wrapper.get('[data-testid="summary-size"]').text()).toBe("3");
+
+    const select = wrapper.find("select#status-filter");
+    await select.setValue("pending");
+    expect(wrapper.get('[data-testid="list-size"]').text()).toBe("1");
+    expect(wrapper.get('[data-testid="summary-size"]').text()).toBe("3");
+
+    await select.setValue("approved");
+    expect(wrapper.get('[data-testid="list-size"]').text()).toBe("1");
+
+    await select.setValue("rejected");
+    expect(wrapper.get('[data-testid="list-size"]').text()).toBe("1");
+
+    await select.setValue("all");
+    expect(wrapper.get('[data-testid="list-size"]').text()).toBe("3");
+  });
+
   it("loads loans on mount and refreshes after child events", async () => {
     vi.mocked(getLoans)
       .mockReturnValueOnce([createLoan()])

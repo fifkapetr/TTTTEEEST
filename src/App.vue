@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import type { LoanApplication } from "./types/loan";
+import { ref, computed, onMounted } from "vue";
+import type { LoanApplication, LoanStatus } from "./types/loan";
 import {
   getLoans,
   updateLoanStatus,
@@ -12,6 +12,12 @@ import LoanList from "./components/LoanList.vue";
 import LoanSummary from "./components/LoanSummary.vue";
 
 const loans = ref<LoanApplication[]>([]);
+const statusFilter = ref<LoanStatus | "all">("all");
+
+const filteredLoans = computed(() => {
+  if (statusFilter.value === "all") return loans.value;
+  return loans.value.filter((l) => l.status === statusFilter.value);
+});
 
 function refreshLoans() {
   loans.value = getLoans();
@@ -54,8 +60,17 @@ onMounted(() => {
       <LoanForm @created="refreshLoans" />
       <div class="right-panel">
         <LoanSummary :loans="loans" />
+        <div class="filter-bar">
+          <label for="status-filter">Filter by status:</label>
+          <select id="status-filter" v-model="statusFilter">
+            <option value="all">All</option>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
         <LoanList
-          :loans="loans"
+          :loans="filteredLoans"
           @approve="handleApprove"
           @reject="handleReject"
           @auto-decide="handleAutoDecide"
@@ -99,6 +114,26 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+}
+
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.filter-bar label {
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.filter-bar select {
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--border-color, #ccc);
+  border-radius: var(--border-radius, 4px);
+  background-color: var(--card-background, #fff);
+  font-size: 0.9rem;
+  cursor: pointer;
 }
 
 @media (max-width: 900px) {
