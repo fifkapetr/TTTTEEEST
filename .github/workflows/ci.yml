@@ -46,9 +46,13 @@ jobs:
           
           if (fs.existsSync(testResultsPath)) {
             const results = JSON.parse(fs.readFileSync(testResultsPath, 'utf8'))
+            const durationMs = (results.testResults ?? [])
+              .map(suite => suite.endTime - suite.startTime)
+              .filter(value => Number.isFinite(value))
+              .reduce((total, value) => total + value, 0)
             summary += `\n- Suites: ${results.numPassedTestSuites}/${results.numTotalTestSuites} passed`
             summary += `\n- Tests: ${results.numPassedTests}/${results.numTotalTests} passed`
-            summary += `\n- Duration: ${(results.testResults?.reduce((total, suite) => total + (suite.endTime - suite.startTime), 0) ?? 0) / 1000}s`
+            summary += `\n- Duration: ${Math.round(durationMs) / 1000}s`
           } else {
             summary += '\n- Test result JSON was not generated.'
           }

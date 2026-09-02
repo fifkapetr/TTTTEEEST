@@ -93,7 +93,7 @@ All data is stored in the browser's localStorage under the key `tredgate_loans`.
 
 ## Test Documentation
 
-See `/home/runner/work/TTTTEEEST/TTTTEEEST/TESTING.md` for full test scope and CI reporting details.
+See [TESTING.md](./TESTING.md) for full test scope and CI reporting details.
 
 ## License
 
