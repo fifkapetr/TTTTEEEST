@@ -91,8 +91,7 @@ describe("App", () => {
     ]);
 
     const wrapper = mountApp();
-    await Promise.resolve();
-
+    await wrapper.vm.$nextTick();
     expect(wrapper.get('[data-testid="list-size"]').text()).toBe("3");
     expect(wrapper.get('[data-testid="summary-size"]').text()).toBe("3");
 
