@@ -1,8 +1,6 @@
 name: CI
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 
@@ -30,7 +28,51 @@ jobs:
         run: npm run lint
 
       - name: Run tests
-        run: npm run test
+        run: npm run test:report
 
       - name: Build
         run: npm run build
+
+      - name: Publish test overview
+        if: always()
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs')
+          const summaryPath = process.env.GITHUB_STEP_SUMMARY
+          const testResultsPath = 'reports/test-results.json'
+          const coveragePath = 'reports/coverage/coverage-summary.json'
+          
+          let summary = '## Test Overview\n'
+          
+          if (fs.existsSync(testResultsPath)) {
+            const results = JSON.parse(fs.readFileSync(testResultsPath, 'utf8'))
+            summary += `\n- Suites: ${results.numPassedTestSuites}/${results.numTotalTestSuites} passed`
+            summary += `\n- Tests: ${results.numPassedTests}/${results.numTotalTests} passed`
+            summary += `\n- Duration: ${(results.testResults?.reduce((total, suite) => total + (suite.endTime - suite.startTime), 0) ?? 0) / 1000}s`
+          } else {
+            summary += '\n- Test result JSON was not generated.'
+          }
+          
+          if (fs.existsSync(coveragePath)) {
+            const coverage = JSON.parse(fs.readFileSync(coveragePath, 'utf8')).total
+            summary += '\n\n## Coverage Overview'
+            summary += `\n- Lines: ${coverage.lines.pct}%`
+            summary += `\n- Functions: ${coverage.functions.pct}%`
+            summary += `\n- Statements: ${coverage.statements.pct}%`
+            summary += `\n- Branches: ${coverage.branches.pct}%`
+          } else {
+            summary += '\n\n## Coverage Overview\n- Coverage summary was not generated.'
+          }
+          
+          fs.appendFileSync(summaryPath, `${summary}\n`)
+          NODE
+
+      - name: Upload test report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            reports/test-report.html
+            reports/test-results.json
+            reports/coverage
