@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { mount } from "@vue/test-utils";
 import LoanList from "../src/components/LoanList.vue";
 import type { LoanApplication } from "../src/types/loan";
@@ -25,6 +25,10 @@ describe("LoanList", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(calculateMonthlyPayment).mockReturnValue(900);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it("shows empty state when no loans exist", () => {
@@ -74,7 +78,6 @@ describe("LoanList", () => {
     expect(wrapper.emitted("autoDecide")?.[0]).toEqual(["loan-1"]);
     expect(confirmSpy).toHaveBeenCalledTimes(1);
     expect(wrapper.emitted("delete")?.[0]).toEqual(["loan-1"]);
-    confirmSpy.mockRestore();
   });
 
   it("hides pending-only action buttons when loan is not pending but still shows delete", () => {
@@ -89,6 +92,5 @@ describe("LoanList", () => {
     expect(wrapper.find('button[title="Delete"]').exists()).toBe(true);
     expect(wrapper.find(".no-actions").exists()).toBe(false);
     expect(confirmSpy).not.toHaveBeenCalled();
-    confirmSpy.mockRestore();
   });
 });
