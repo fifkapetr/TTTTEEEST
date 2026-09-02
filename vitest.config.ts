@@ -5,6 +5,16 @@ export default defineConfig({
   plugins: [vue()],
   test: {
     environment: 'jsdom',
-    globals: true
+    globals: true,
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json-summary', 'html'],
+      reportsDirectory: 'reports/coverage',
+      include: ['src/**/*.{ts,vue}']
+    },
+    outputFile: {
+      json: 'reports/test-results.json',
+      html: 'reports/test-report.html'
+    }
   }
 })

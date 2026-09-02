@@ -56,6 +56,12 @@ npm run build
 npm run test
 ```
 
+Generate HTML and JSON test reports (plus coverage):
+
+```bash
+npm run test:report
+```
+
 ### Linting
 
 ```bash
@@ -84,6 +90,10 @@ tests/
 ## Data Persistence
 
 All data is stored in the browser's localStorage under the key `tredgate_loans`. No backend server or external database is used.
+
+## Test Documentation
+
+See [TESTING.md](./TESTING.md) for full test scope and CI reporting details.
 
 ## License
 

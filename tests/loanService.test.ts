@@ -44,6 +44,14 @@ describe('loanService', () => {
       expect(loans).toEqual([])
     })
 
+    it('returns empty array when stored data is invalid JSON', () => {
+      localStorageMock.setItem('tredgate_loans', 'invalid-json')
+
+      const loans = getLoans()
+
+      expect(loans).toEqual([])
+    })
+
     it('returns stored loans', () => {
       const storedLoans: LoanApplication[] = [
         {
@@ -89,7 +97,7 @@ describe('loanService', () => {
   describe('createLoanApplication', () => {
     it('creates a new loan with pending status', () => {
       const input = {
-        applicantName: 'Alice Smith',
+        applicantName: '  Alice Smith  ',
         amount: 25000,
         termMonths: 12,
         interestRate: 0.05
@@ -104,6 +112,7 @@ describe('loanService', () => {
       expect(loan.status).toBe('pending')
       expect(loan.id).toBeDefined()
       expect(loan.createdAt).toBeDefined()
+      expect(getLoans()).toHaveLength(1)
     })
 
     it('throws error for empty applicant name', () => {
