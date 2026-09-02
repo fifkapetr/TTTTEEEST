@@ -1,35 +1,45 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import type { LoanApplication } from './types/loan'
-import { getLoans, updateLoanStatus, autoDecideLoan } from './services/loanService'
-import LoanForm from './components/LoanForm.vue'
-import LoanList from './components/LoanList.vue'
-import LoanSummary from './components/LoanSummary.vue'
+import { ref, onMounted } from "vue";
+import type { LoanApplication } from "./types/loan";
+import {
+  getLoans,
+  updateLoanStatus,
+  autoDecideLoan,
+  deleteLoan,
+} from "./services/loanService";
+import LoanForm from "./components/LoanForm.vue";
+import LoanList from "./components/LoanList.vue";
+import LoanSummary from "./components/LoanSummary.vue";
 
-const loans = ref<LoanApplication[]>([])
+const loans = ref<LoanApplication[]>([]);
 
 function refreshLoans() {
-  loans.value = getLoans()
+  loans.value = getLoans();
 }
 
 function handleApprove(id: string) {
-  updateLoanStatus(id, 'approved')
-  refreshLoans()
+  updateLoanStatus(id, "approved");
+  refreshLoans();
 }
 
 function handleReject(id: string) {
-  updateLoanStatus(id, 'rejected')
-  refreshLoans()
+  updateLoanStatus(id, "rejected");
+  refreshLoans();
 }
 
 function handleAutoDecide(id: string) {
-  autoDecideLoan(id)
-  refreshLoans()
+  autoDecideLoan(id);
+  refreshLoans();
+}
+
+function handleDelete(id: string) {
+  deleteLoan(id);
+  refreshLoans();
 }
 
 onMounted(() => {
-  refreshLoans()
-})
+  refreshLoans();
+});
 </script>
 
 <template>
@@ -49,6 +59,7 @@ onMounted(() => {
         @approve="handleApprove"
         @reject="handleReject"
         @auto-decide="handleAutoDecide"
+        @delete="handleDelete"
       />
     </main>
   </div>
